@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <!-- We just re-use the source code of the 0.5.x version of the addon minus some files -->
+  <ItemGroup>
+    <Compile Include="../OTD.UX.Remote-0.5.x/**/*.cs" CopyToOutputDirectory="Never" />
+
+    <Compile Remove="../OTD.UX.Remote-0.5.x/obj/**/*.cs" />
+    <Compile Remove="../OTD.UX.Remote-0.5.x/bin/**/*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../OTD.UX.Remote.Lib/OTD.UX.Remote.Lib.csproj" />
+    <ProjectReference Include="../.modules/OpenTabletDriver-0.6.x/OpenTabletDriver.UX/OpenTabletDriver.UX.csproj" PrivateAssets="all" />
+  </ItemGroup>
+
+</Project>
