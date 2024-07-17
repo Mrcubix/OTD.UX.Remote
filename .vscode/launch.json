@@ -1,0 +1,30 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "OpenTabletDriver C# UX Debugging",
+            "type": "coreclr",
+            "request": "attach",
+            "requireExactSource": false,
+            "processName": "OpenTabletDriver.UX.WPF",
+            "logging": {
+                "moduleLoad": false
+            },
+        },
+        {
+            "name": "OpenTabletDriver C# Daemon Debugging",
+            "type": "coreclr",
+            "request": "attach",
+            "requireExactSource": false,
+            "processName": "OpenTabletDriver.Daemon",
+            "logging": {
+                "moduleLoad": false
+            },
+        },
+        {
+            "name": ".NET Core Attach",
+            "type": "coreclr",
+            "request": "attach"
+        }
+    ]
+}
