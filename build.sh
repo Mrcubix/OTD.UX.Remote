@@ -6,19 +6,22 @@ files=( OTD.UX.Remote
 
 prepare_build_folder()
 {
-  if [ ! -d "build/$1" ]; then
-    mkdir "build/$1" --parents
-  else
-    rm -rf "build/$1/*"
-  fi
+    if [ ! -d "build/$1" ]; then
+        mkdir "build/$1" --parents
+    else
+        rm -rf "build/$1/*"
+    fi
 }
 
 move_if_exists()
 {
-  if [ -f "$1" ]; then
-    cp $1 $2
-  fi
+    if [ -f "$1" ]; then
+        cp $1 $2
+    fi
 }
+
+# Re-create hashes.txt
+> "./build/hashes.txt"
 
 for version in 0.5.x 0.6.x
 do
@@ -38,6 +41,9 @@ do
     (
         cd build/$version
         jar -cfM OTD.UX.Remote-$version.zip *.dll
+
+        echo "Computing OTD.UX.Remote-$version.zip Hash"
+        sha256sum OTD.UX.Remote-$version.zip >> ../hashes.txt
     )
 done
 
