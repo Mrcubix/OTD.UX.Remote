@@ -25,6 +25,7 @@ public class UXRemote : IUXRemote, ITool
     public static readonly Type TypeInfo = typeof(UXRemote).GetTypeInfo();
     public static readonly Type? TabletSwitcherTypeInfo = typeof(App).Assembly
                                                                      .GetType("OpenTabletDriver.UX.Controls.TabletSwitcherPanel+TabletSwitcher");
+                                                                     
     private static CancellationTokenSource _tokenSource = new();
     private static RpcServer<UXRemote> Host { get; set; } = new("OTD.UX.Remote");
     private static UXRemote? Instance => Host?.Instance;

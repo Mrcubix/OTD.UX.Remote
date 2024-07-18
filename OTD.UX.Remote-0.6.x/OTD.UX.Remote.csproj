@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
+    <NoWarn>$(NoWarn); VSTHRD200</NoWarn>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
