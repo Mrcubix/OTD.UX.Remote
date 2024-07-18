@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-files=( OTD.UX.Remote.dll OTD.UX.Remote.pdb 
-        OTD.UX.Remote.Lib.dll OTD.UX.Remote.Lib.pdb 
-        OpenTabletDriver.External.Common.dll OpenTabletDriver.External.Common.pdb )
+files=( OTD.UX.Remote
+        OTD.UX.Remote.Lib
+        OpenTabletDriver.External.Common )
 
 prepare_build_folder()
 {
@@ -31,7 +31,8 @@ do
     # Move necessary files to the build folder
     for file in "${files[@]}"
     do
-        move_if_exists temp/$version/$file build/$version
+        move_if_exists temp/$version/$file.dll build/$version
+        move_if_exists temp/$version/$file.pdb build/$version
     done
 
     (
