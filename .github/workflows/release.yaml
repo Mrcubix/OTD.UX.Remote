@@ -42,4 +42,4 @@ jobs:
         files+=("build/0.5.x/OTD.UX.Remote-0.5.x.zip")
         files+=("build/0.6.x/OTD.UX.Remote-0.6.x.zip")
 
-        gh release create -d -t "OTD.UX.Remote $TAG" "$output_tag" "${files[@]}" -F build/hashes.txt --target $BRANCH
+        gh release create -d -t "OTD.UX.Remote $TAG" "$TAG" "${files[@]}" -F build/hashes.txt
