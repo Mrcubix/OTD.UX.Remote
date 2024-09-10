@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Eto.Drawing;
 using Eto.Forms;
 using OpenTabletDriver.Desktop;
 using OpenTabletDriver.External.Common.RPC;
@@ -23,25 +24,35 @@ namespace OTD.UX.Remote;
 public class UXRemote : IUXRemote, ITool
 {
     public static readonly Type TypeInfo = typeof(UXRemote).GetTypeInfo();
-    public static readonly Type? TabletSwitcherTypeInfo = typeof(App).Assembly
-                                                                     .GetType("OpenTabletDriver.UX.Controls.TabletSwitcherPanel+TabletSwitcher");
+    public static Type? TabletSwitcherTypeInfo { get; set; }
                                                                      
     private static CancellationTokenSource _tokenSource = new();
     private static RpcServer<UXRemote> Host { get; set; } = new("OTD.UX.Remote");
     private static UXRemote? Instance => Host?.Instance;
     private static bool HasStarted { get; set; }
+    private static bool IsUX { get; set; }
 
     #region static initialization
 
     [ModuleInitializer]
-    public static void InitializeCore()
+    public static void ModuleInitialize()
     {
-        if (HasStarted)
+        CheckIfUX();
+
+        if (IsUX == false)
             return;
 
-        HasStarted = true;
+        if (InitializeCore())
+            Log.Write("UX Remote", "UX Remote started successfully.");
+    }
 
-        //_ = Task.Run(Host.MainAsync, _tokenSource.Token);
+    public static bool InitializeCore()
+    {
+        if (HasStarted)
+            return false;
+
+        HasStarted = true;
+        TabletSwitcherTypeInfo = typeof(App).Assembly.GetType("OpenTabletDriver.UX.Controls.TabletSwitcherPanel+TabletSwitcher");
 
         Application.Instance.Terminating += OnTerminating;
 
@@ -53,7 +64,21 @@ public class UXRemote : IUXRemote, ITool
 
         OnSettingsChanged(GetSettings());
 
-        Log.Write("UX Remote", "UX Remote started successfully.");
+        return true;
+    }
+
+    private static void CheckIfUX()
+    {
+        var index = 0;
+        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+        while (!IsUX && index < assemblies.Length)
+        {
+            if (assemblies[index].GetName().Name == "OpenTabletDriver.UX")
+                IsUX = true;
+
+            index++;
+        }
     }
 
     private static void OnSettingsChanged(Settings? settings)
