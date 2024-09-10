@@ -26,7 +26,7 @@ move_if_exists()
 for version in 0.5.x 0.6.x
 do
     # Build & Exit on failure
-    dotnet build OTD.UX.Remote-$version -c Debug -o temp/$version || exit 1
+    dotnet build OTD.UX.Remote-$version -c Release -o temp/$version || exit 1
 
     # check if the build folder does not exist, else create it
     prepare_build_folder $version
