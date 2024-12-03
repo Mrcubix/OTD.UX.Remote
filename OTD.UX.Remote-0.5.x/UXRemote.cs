@@ -30,20 +30,20 @@ public class UXRemote : IUXRemote, ITool
     private static RpcServer<UXRemote> Host { get; set; } = new("OTD.UX.Remote");
     private static UXRemote? Instance => Host?.Instance;
     private static bool HasStarted { get; set; }
-    private static bool IsUX { get; set; }
 
     #region static initialization
 
     [ModuleInitializer]
     public static void ModuleInitialize()
     {
-        CheckIfUX();
-
-        if (IsUX == false)
-            return;
-
-        if (InitializeCore())
+        if (CheckIfUX() && InitializeCore())
             Log.Write("UX Remote", "UX Remote started successfully.");
+    }
+
+    private static bool CheckIfUX()
+    {
+        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        return assemblies.Any(x => x.GetName().Name == "OpenTabletDriver.UX");
     }
 
     public static bool InitializeCore()
@@ -65,20 +65,6 @@ public class UXRemote : IUXRemote, ITool
         OnSettingsChanged(GetSettings());
 
         return true;
-    }
-
-    private static void CheckIfUX()
-    {
-        var index = 0;
-        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-
-        while (!IsUX && index < assemblies.Length)
-        {
-            if (assemblies[index].GetName().Name == "OpenTabletDriver.UX")
-                IsUX = true;
-
-            index++;
-        }
     }
 
     private static void OnSettingsChanged(Settings? settings)
