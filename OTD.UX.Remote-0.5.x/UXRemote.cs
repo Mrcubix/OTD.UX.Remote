@@ -194,7 +194,7 @@ public class UXRemote : IUXRemote, ITool
     public static void SetProfiles(object? instance, Settings settings)
     {
         // TabletSwitcher is a private class of TabletSwitcherPanel
-        TabletSwitcherTypeInfo.SetPropertyValue(instance, "Profiles", settings.Profiles);
+        TabletSwitcherTypeInfo?.SetPropertyValue(instance, "Profiles", settings.Profiles);
     }
 #endif
 
