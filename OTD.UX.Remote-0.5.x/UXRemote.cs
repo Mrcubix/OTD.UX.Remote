@@ -25,7 +25,7 @@ public class UXRemote : IUXRemote, ITool
 {
     public static readonly Type TypeInfo = typeof(UXRemote).GetTypeInfo();
     public static Type? TabletSwitcherTypeInfo { get; set; }
-                                                                     
+
     private static CancellationTokenSource _tokenSource = new();
     private static RpcServer<UXRemote> Host { get; set; } = new("OTD.UX.Remote");
     private static UXRemote? Instance => Host?.Instance;
@@ -42,8 +42,8 @@ public class UXRemote : IUXRemote, ITool
 
     private static bool CheckIfUX()
     {
-        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-        return assemblies.Any(x => x.GetName().Name == "OpenTabletDriver.UX");
+        return AppDomain.CurrentDomain.GetAssemblies()
+                                      .Any(x => x.GetName().Name == "OpenTabletDriver.UX");
     }
 
     public static bool InitializeCore()
@@ -99,10 +99,7 @@ public class UXRemote : IUXRemote, ITool
 
     private static void OnConnectionStateChanged(object? sender, bool isConnected)
     {
-        if (isConnected)
-            Log.Debug("UX Remote", "New client connected.");
-        else
-            Log.Debug("UX Remote", "Client disconnected.");
+        Log.Debug("UX Remote", isConnected ? "New client connected." : "Client disconnected.");
     }
 
     #endregion
@@ -123,14 +120,7 @@ public class UXRemote : IUXRemote, ITool
         if (await App.Driver.Instance.GetSettings() is not Settings settings)
             return;
 
-        Application.Instance.AsyncInvoke(() =>
-        {
-#if NET5_0
-            App.Settings = settings;
-#elif NET6_0
-            App.Current.Settings = settings;
-#endif
-        });
+        Application.Instance.AsyncInvoke(() => SetSettings(settings));
 
 #if NET6_0
         // Above isn't enough in 0.6.x, as for some reasons, it doesn't update the OutputMode Page
@@ -143,30 +133,17 @@ public class UXRemote : IUXRemote, ITool
 
         var instance = typeof(TabletSwitcherPanel).GetValue<object>(tabletSwitcherPanel, "tabletSwitcher");
 
-        Application.Instance.AsyncInvoke(() =>
-        {
-            // TabletSwitcher is a private class of TabletSwitcherPanel
-            TabletSwitcherTypeInfo.SetPropertyValue(instance, "Profiles", settings.Profiles);
-        });
+        Application.Instance.AsyncInvoke(() => SetProfiles(instance, settings));
 #endif
     }
 
     public Task SendNotification(string message)
-    {
-        if (Application.Instance == null)
-            return Task.CompletedTask;
-
-        ShowNotification(null, message);
-
-        return Task.CompletedTask;
-    }
+        => SendNotification(null!, message);
 
     public Task SendNotification(string title, string message)
     {
-        if (Application.Instance == null)
-            return Task.CompletedTask;
-
-        ShowNotification(title, message);
+        if (Application.Instance != null)
+            ShowNotification(title, message);
 
         return Task.CompletedTask;
     }
@@ -203,6 +180,23 @@ public class UXRemote : IUXRemote, ITool
         return App.Current.Settings;
 #endif
     }
+
+    public static void SetSettings(Settings settings)
+    {
+#if NET5_0
+        App.Settings = settings;
+#elif NET6_0
+        App.Current.Settings = settings;
+#endif
+    }
+
+#if NET6_0
+    public static void SetProfiles(object? instance, Settings settings)
+    {
+        // TabletSwitcher is a private class of TabletSwitcherPanel
+        TabletSwitcherTypeInfo.SetPropertyValue(instance, "Profiles", settings.Profiles);
+    }
+#endif
 
     public static void OnTerminating(object? sender, EventArgs e)
     {
